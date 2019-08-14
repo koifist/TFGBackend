@@ -1,4 +1,4 @@
-const authentication = require('../../service/core/authentication-service');
+const authentication = require('../../services/core/authentication-service');
 const controller = require('../../controller/index');
 const express = require('express');
 module.exports.init = function (expressApp) {
@@ -15,9 +15,14 @@ module.exports.init = function (expressApp) {
     router.post('/createUser', controller.userController.signUp);
 
     /**
-     * Route that update user details.
+     * Route that update user password.
      */
-    router.post('/updateUser/:_id', authentication.init, controller.userController.updateUser);
+    router.post('/updatePass', authentication.init, controller.userController.updatePass);
+
+    /**
+     * Route that update user role.
+     */
+    router.post('/updateUser/:_id*', authentication.init, controller.userController.updateRole);
 
     expressApp.use('/', router);
 };

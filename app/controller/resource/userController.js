@@ -1,10 +1,11 @@
-const loggerService = require('../../service/core/logger-service');
+const loggerService = require('../../services/core/logger-service');
 let logger = loggerService.getLogger();
 const env = require('../../config/env');
-const error = require('../../service/core/error-service');
-const userService = require('../../service/resource/user-service');
+const error = require('../../services/core/error-service');
+const userService = require('../../services/resource/user-service');
 
-/**Method that create a sesion to user
+/**
+ * Method that return a token to user
  * @param req.user.username
  * @param req.user.password
  * @return {String} token to user
@@ -12,7 +13,7 @@ const userService = require('../../service/resource/user-service');
 module.exports.signIn = function (req, res) {
     logger.info('[userController] start signIn');
     if (!req.body) {
-        error.sendError(env.ERRCODE.ERR400, res);
+        error.sendError(env.errCodes.ERR400, res);
     } else {
         userService.signIn(req.body).then(function (data) {
             logger.info('[userController] signIn success');
@@ -24,10 +25,10 @@ module.exports.signIn = function (req, res) {
     }
 };
 
-/**Method that create user
+/**
+ * Method that create user
  * @param req.user.username
  * @param req.user.password
- * @param req.user.email
  * @return {String} token to user
  */
 module.exports.signUp = function (req, res) {
@@ -40,11 +41,36 @@ module.exports.signUp = function (req, res) {
     });
 };
 
-/**Method that create a sesion to user
+/**
+ * Method that update user password
  * @param req.user.username
- * @param req.user.password
  * @return {String} token to user
  */
-module.exports.updateUser = function (req, res) {
+module.exports.updatePass = function (req, res) {
+    logger.info('[userController] updatePass Start');
+    userService.updatePass(req).then(function (data) {
+        res.json(data);
+    }).catch(function (err) {
+        logger.error('[userController] signUp error', err);
+        error.sendError(err, res);
+    });
+};
 
+/**
+ * Method that update user Role
+ * @param req.params._id
+ * @return {String} token to user
+ */
+module.exports.updateRole = function (req, res) {
+    logger.info('[userController] updatePass Start');
+    if (req.user.role !== env.services.roles.admin) {
+        error.sendError(env.errCodes.ERR401, res)
+    } else {
+        userService.updateRole(req).then(function (data) {
+            res.json(data);
+        }).catch(function (err) {
+            logger.error('[userController] signUp error', err);
+            error.sendError(err, res);
+        });
+    }
 };

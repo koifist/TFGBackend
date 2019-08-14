@@ -1,6 +1,6 @@
 try {
-    const expressService = require('./service/core/express-service');
-    const mongooseService = require('./service/core/mongoose-service');
+    const expressService = require('./services/core/express-service');
+    const mongooseService = require('./services/core/mongoose-service');
     mongooseService.init().then(function () {
         expressService.init();
     });

@@ -1,6 +1,7 @@
 const extendSchema = require('mongoose-extend-schema');
 const commonModel = require('./commonModel');
-const mongooseService = require('../service/core/mongoose-service');
+const mongooseService = require('../services/core/mongoose-service');
+const env = require('../config/env');
 
 const userSchema = extendSchema(commonModel.schema, {
     username: {
@@ -14,11 +15,11 @@ const userSchema = extendSchema(commonModel.schema, {
     },
     role: {
         type: String,
-        default: 'PUB'
+        default: env.services.roles.public
     },
-    email: {
-        type: String,
-        required: true
+    isActive: {
+        type: Boolean,
+        default: true
     }
 }, {
     timestamps: true,

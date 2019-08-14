@@ -1,18 +1,20 @@
 module.exports = {
-    token: {
-        PRIVATETOKEN: "MIICXAIBAAKBgQCqGKukO1De7zhZj6+H0qtjTkVxwTCpvKe4eCZ0F"
+    security: {
+        ROUND_BCRYPT: 10,
+        PRIVATE_TOKEN: 'MIicXAibAAKBgQCqGKukO1De7zhZj6+H0qtjTkVxwTCpvKe4eCZ0F',
+        TTL_TOKEN: '3h'
     },
     app: {
         port: 3000,
-        url: 'http://localhost:3000',
-        defaultDateFormat: ['DD/MM/YYYY', 'DD/MM/YY', 'YYYY-MM-DD']
+        url: 'http://localhost:3000'
     },
-    service: {
+    services: {
         roles: {
             admin: 'ADM',
             broker: 'BRO',
             public: 'PUB'
         },
+        company: [{name: 'Google'}, {name: 'Amazon'}, {name: 'Apple'}]
     },
     logger: {
         levelConsole: 'debug',
@@ -25,7 +27,7 @@ module.exports = {
             default: '-v -createdAt -updatedAt'
         }
     },
-    ERRCODE: {
+    errCodes: {
         SUCCESS: {status: 200, msg: 'OK'},
         SERVER: {status: 500, msg: 'Internal server error'},
         ERR400: {status: 400, msg: 'Bad request'},
