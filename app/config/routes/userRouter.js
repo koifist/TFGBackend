@@ -22,7 +22,12 @@ module.exports.init = function (expressApp) {
     /**
      * Route that update user role.
      */
-    router.post('/updateUser/:_id*', authentication.init, controller.userController.updateRole);
+    router.post('/updateUser/:_id', authentication.init, controller.userController.updateRole);
+
+    /**
+     * Route that delete
+     */
+    router.delete('/deleteUser/:_id?', authentication.init, controller.userController.deleteUser);
 
     expressApp.use('/', router);
 };

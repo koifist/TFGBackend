@@ -15,7 +15,13 @@ const brokerSchema = extendSchema(commonModel.schema, {
         default: false
     },
     messages: [{
-        type: String
+        msg: {
+            type: String
+        },
+        date: {
+            type: Date,
+            default: new Date
+        }
     }]
 }, {
     timestamps: true,
