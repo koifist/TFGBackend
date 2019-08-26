@@ -11,13 +11,18 @@ const brokerService = require('../../services/resource/broker-service');
  */
 module.exports.createBroker = function (req, res) {
     logger.info('[brokerController] createBroker Start');
-    brokerService.createBroker(req.body, req.user).then(function (data) {
-        logger.info('[brokerController] createBroker Success');
-        res.json(data);
-    }).catch(function (err) {
-        logger.error('[brokerController] createBroker Error', err);
-        error.sendError(err, res);
-    });
+    if (req.user.role !== env.services.roles.admin) {
+        logger.info('[brokerController] activeBroker Not ADM');
+        error.sendError(env.errCodes.ERR401, res);
+    } else {
+        brokerService.createBroker(req.body, req.user).then(function (data) {
+            logger.info('[brokerController] createBroker Success');
+            res.json(data);
+        }).catch(function (err) {
+            logger.error('[brokerController] createBroker Error', err);
+            error.sendError(err, res);
+        });
+    }
 };
 
 /**
@@ -28,13 +33,18 @@ module.exports.createBroker = function (req, res) {
  */
 module.exports.sendMessage = function (req, res) {
     logger.info('[brokerController] sendMessage Start');
-    brokerService.sendMessage(req.body, req.user).then(function (data) {
-        logger.info('[brokerController] sendMessage Success');
-        res.json(data);
-    }).catch(function (err) {
-        logger.error('[brokerController] sendMessage Error', err);
-        error.sendError(err, res);
-    });
+    if (req.user.role !== 'BRO') {
+        logger.info('[brokerController] activeBroker Not ADM');
+        error.sendError(env.errCodes.ERR401, res);
+    } else {
+        brokerService.sendMessage(req.body, req.user).then(function (data) {
+            logger.info('[brokerController] sendMessage Success');
+            res.json(data);
+        }).catch(function (err) {
+            logger.error('[brokerController] sendMessage Error', err);
+            error.sendError(err, res);
+        });
+    }
 };
 
 /**
@@ -54,33 +64,6 @@ module.exports.activeBroker = function (req, res) {
             res.json(data);
         }).catch(function (err) {
             logger.error('[brokerController] activeBroker Error', err);
-            error.sendError(err, res);
-        });
-    }
-};
-
-/**
- * Method that return one broker or all
- * @param req.user
- * @param req.params._id
- * @return {status}
- */
-module.exports.getBrokers = function (req, res) {
-    logger.info('[brokerController] getBrokers Start');
-    if (req.params._id) {
-        brokerService.findBroker(req.params, req.user).then(function (data) {
-            logger.info('[brokerController] getBrokers Success');
-            res.json(data);
-        }).catch(function (err) {
-            logger.error('[brokerController] getBrokers Error', err);
-            error.sendError(err, res);
-        });
-    } else {
-        brokerService.getBrokers(req.params, req.user).then(function (data) {
-            logger.info('[brokerController] getBrokers Success');
-            res.json(data);
-        }).catch(function (err) {
-            logger.error('[brokerController] getBrokers Error', err);
             error.sendError(err, res);
         });
     }

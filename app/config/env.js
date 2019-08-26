@@ -14,7 +14,10 @@ module.exports = {
             broker: 'BRO',
             public: 'PUB'
         },
-        company: [{name: 'Google'}, {name: 'Amazon'}, {name: 'Apple'}]
+        company: [{name: 'Google', price: '1153,58'}, {name: 'Amazon', price: '1749,62'}, {
+            name: 'Apple',
+            price: '1202,64'
+        }]
     },
     logger: {
         levelConsole: 'debug',

@@ -12,9 +12,6 @@ const userService = require('../../services/resource/user-service');
  */
 module.exports.signIn = function (req, res) {
     logger.info('[userController] start signIn');
-    if (!req.body) {
-        error.sendError(env.errCodes.ERR400, res);
-    } else {
         userService.signIn(req.body).then(function (data) {
             logger.info('[userController] signIn success');
             res.json(data);
@@ -22,7 +19,6 @@ module.exports.signIn = function (req, res) {
             logger.error('[userController] signIn error', err);
             error.sendError(err, res);
         });
-    }
 };
 
 /**

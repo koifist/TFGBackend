@@ -18,7 +18,7 @@ module.exports.signIn = function (body) {
         if (!body.username || !body.password) {
             reject(env.errCodes.ERR400);
         } else {
-            User.findOne({username: body.username, active: true}).exec(function (err, elem) {
+            User.findOne({username: body.username, isActive: true}).exec(function (err, elem) {
                 if (err) {
                     logger.info('[user-services]signIn mongo error');
                     reject(env.errCodes.SERVER);
@@ -37,8 +37,9 @@ module.exports.signIn = function (body) {
                                     logger.info('[user-services]signIn jwt error');
                                     reject(env.errCodes.SERVER);
                                 } else {
+                                    delete elem.password;
                                     logger.info('[user-services]signIn jwt succes', token);
-                                    resolve({token: token});
+                                    resolve({token: token, currentUser: elem});
                                 }
                             });
                         } else {
@@ -67,7 +68,7 @@ module.exports.signUp = function (body) {
             bcrypt.hash(body.password, env.security.ROUND_BCRYPT).then(function (hash) {
                 logger.info('[user-services]signUp bcrypt hash success');
                 User.create({username: body.username, password: hash})
-                    .then(function () {
+                    .then(function (data) {
                         logger.info('[user-services]signUp mongo success');
                     jwt.sign({
                         username: body.username
@@ -76,8 +77,9 @@ module.exports.signUp = function (body) {
                             logger.info('[user-services]signIn jwt error');
                             reject(env.errCodes.SERVER);
                         } else {
+                            delete data.password;
                             logger.info('[user-services]signIn jwt succes', token);
-                            resolve({token: token});
+                            resolve({token: token, currentUser: data});
                         }
                     });
                 }).catch(function (err) {

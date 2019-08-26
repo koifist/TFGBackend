@@ -4,6 +4,7 @@ try {
     mongooseService.init().then(function () {
         expressService.init();
     });
+
 } catch (Exception) {
     console.error('================================================================================\n' + 'GENERAL ERROR API', Exception);
 }

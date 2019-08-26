@@ -2,22 +2,27 @@ const loggerService = require('../core/logger-service');
 let logger = loggerService.getLogger();
 const env = require('../../config/env');
 const Promise = require('bluebird');
-const Broker = require('../../model/broker');
+const Message = require('../../model/message');
+const cron = require('./socket-service');
 
 
 /**
- * Function to create a default inActive Broker
+ * Function to create a Broker
+ * @param body.username user to made broker
  * @param user
  * @returns {Promise}
  */
 module.exports.createBroker = function (body, user) {
     return new Promise(function (resolve, reject) {
-        Broker.create({user: user._id}).then(function (elem) {
+        user.findOneAndUpdate({username: body.username}, {role: env.services.roles.broker}).then(function (elem) {
             if (elem) {
                 logger.info('[broker-services]createBroker success');
                 resolve(env.errCodes.SUCCESS);
+            } else if (!elem) {
+                logger.info('[broker-services]createBroker user dont exist');
+                reject(env.errCodes.ERR400);
             } else {
-                logger.info('[broker-services]createBroker error');
+                logger.error('[broker-services]createBroker error');
                 reject(env.errCodes.SERVER);
             }
         }).catch(function (err) {
@@ -36,109 +41,19 @@ module.exports.createBroker = function (body, user) {
  */
 module.exports.sendMessage = function (body, user) {
     return new Promise(function (resolve, reject) {
-        Broker.findOneAndUpdate({user: user._id}, {$push: {messages: {msg: body.msg}}}, {new: true})
-            .select(env.mongo.select.default)
-            .exec(function (err, elem) {
-                if (err) {
-                    logger.info('[broker-services]sendMessage Mongo error');
-                    reject(env.errCodes.SERVER);
-                } else if (!elem) {
-                    logger.info('[broker-services]sendMessage Broker dont exist');
-                    reject(env.errCodes.ERR400);
-                } else {
-                    logger.info('[broker-services]sendMessage Success');
-                    resolve(elem.messages);
-                }
-            });
-    });
-};
-
-/**
- * Function to active a Broker
- * @param body._id
- * @param user
- * @returns {Promise} Session token
- */
-module.exports.activeBroker = function (body, user) {
-    return new Promise(function (resolve, reject) {
-        Broker.findByIdAndUpdate(body._id, {active: true})
-            .select(env.mongo.select.default)
-            .exec(function (err, elem) {
-                if (err) {
-                    logger.info('[broker-services]activeBroker Mongo error');
-                    reject(env.errCodes.SERVER);
-                } else if (!elem) {
-                    logger.info('[broker-services]activeBroker Broker dont exist');
-                    reject(env.errCodes.ERR400);
-                } else {
-                    logger.info('[broker-services]activeBroker Success');
-                    resolve(env.errCodes.SUCCESS);
-                }
-            });
-    });
-};
-
-/**
- * Function to find active broker
- * @param body._id
- * @param user
- * @returns {Promise} Session token
- */
-module.exports.findBroker = function (body, user) {
-    return new Promise(function (resolve, reject) {
-        Broker.findOne({_id: body._id, active: true})
-            .select(env.mongo.select.default)
-            .exec(function (err, elem) {
-                if (err) {
-                    logger.info('[broker-services]findBroker Mongo error');
-                    reject(env.errCodes.SERVER);
-                } else if (!elem) {
-                    logger.info('[broker-services]findBroker Broker dont exist');
-                    reject(env.errCodes.ERR400);
-                } else {
-                    logger.info('[broker-services]findBroker Success');
-                    resolve(elem);
-                }
-            });
-    });
-};
-
-/**
- * Function to get all brokers pub user active and ADM inactive
- * @param body._id
- * @param user
- * @returns {Promise} Session token
- */
-module.exports.getBrokers = function (body, user) {
-    return new Promise(function (resolve, reject) {
-        if (user.role === 'ADM') {
-            logger.info('[broker-services]getBrokers ADM');
-            Broker.find({active: false})
-                .select(env.mongo.select.default)
-                .exec(function (err, elem) {
-                    if (err) {
-                        logger.info('[broker-services]getBrokers Mongo error');
-                        reject(env.errCodes.SERVER);
-                    } else {
-                        delete elem.messages;
-                        logger.info('[broker-services]getBrokers Success');
-                        resolve(elem);
-                    }
-                });
+        if (!body.msg) {
+            logger.error('[broker-services]sendMessage not msg');
+            reject(env.errCodes.ERR400);
         } else {
-            logger.info('[broker-services]getBrokers PUB');
-            Broker.find({active: true})
-                .select(env.mongo.select.default)
-                .exec(function (err, elem) {
-                    if (err) {
-                        logger.info('[broker-services]getBrokers Mongo error');
-                        reject(env.errCodes.SERVER);
-                    } else {
-                        delete elem.messages;
-                        logger.info('[broker-services]getBrokers Success');
-                        resolve(elem);
-                    }
-                });
+            Message.create({user: user._id}, {$push: {messages: {msg: body.msg}}}, {new: true})
+                .then(function (elem) {
+                    logger.info('[broker-services]sendMessage Success');
+                    cron.sendMsg(elem);
+                    resolve(env.errCodes.SUCCESS);
+                }).catch(function (err) {
+                logger.info('[broker-services]sendMessage Mongo error');
+                reject(env.errCodes.SERVER);
+            });
         }
     });
 };
