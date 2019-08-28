@@ -48,23 +48,19 @@ module.exports.sendMessage = function (req, res) {
 };
 
 /**
- * Method that active Broker
+ * Method that find all Messages
  * @param req.user
- * @param req.params._id
- * @return {status}
+ * @return {array}
  */
-module.exports.activeBroker = function (req, res) {
-    logger.info('[brokerController] activeBroker Start');
-    if (req.user.role !== 'ADM') {
-        logger.info('[brokerController] activeBroker Not ADM');
-        error.sendError(env.errCodes.ERR401, res);
-    } else {
-        brokerService.activeBroker(req.params, req.user).then(function (data) {
-            logger.info('[brokerController] activeBroker Success');
+module.exports.getMessages = function (req, res) {
+    logger.info('[brokerController] getMessages Start');
+    brokerService.getMessages(req.body, req.user)
+        .then(function (data) {
+            logger.info('[brokerController] sendMessage Success');
             res.json(data);
         }).catch(function (err) {
-            logger.error('[brokerController] activeBroker Error', err);
+        logger.error('[brokerController] sendMessage Error', err);
             error.sendError(err, res);
         });
-    }
 };
+

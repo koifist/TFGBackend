@@ -5,14 +5,18 @@ const bodyParser = require('body-parser');
 const Promise = require('bluebird');
 const env = require('../../config/env');
 const router = require('../../config/router-config');
+const cors = require('cors');
 const cronService = require('../resource/socket-service');
+const moment = require('moment');
 
 module.exports.init = function () {
     let app = express();
+    app.use(cors());
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended: true}));
     app.set('port', env.app.port);
     loggerService.init(app).then(function () {
+        moment().locale('es');
         router.init(app);
         let resolver = Promise.defer();
         let server = app.listen(app.get('port'), function () {

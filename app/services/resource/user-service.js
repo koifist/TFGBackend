@@ -24,7 +24,7 @@ module.exports.signIn = function (body) {
                     reject(env.errCodes.SERVER);
                 } else if (!elem) {
                     logger.info('[user-services]signIn user dont exist');
-                    reject(env.errCodes.ERR400);
+                    reject(env.errCodes.ERR401);
                 } else {
                     logger.info('[user-services]signIn user found');
                     bcrypt.compare(body.password, elem.password).then(function (res) {

@@ -6,7 +6,12 @@ const mongoose = require('mongoose');
 const messageSchema = extendSchema(commonModel.schema, {
     user: {
         type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
         required: true,
+    },
+    username: {
+        type: String,
+        require: true
     },
     msg: {
             type: String

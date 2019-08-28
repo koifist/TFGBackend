@@ -4,12 +4,16 @@ let google = parseFloat(env.services.company[0].price);
 let amazon = parseFloat(env.services.company[0].price);
 let apple = parseFloat(env.services.company[0].price);
 let socket;
-let company;
+
+/**
+ * Function that start socket connection and execute stocks send
+ * @param io socket server
+ */
 module.exports.init = function (io) {
     socket = io;
     io.on('connection', function () {
     });
-    cron.schedule('*/30 * * * * *', () => {
+    cron.schedule('*/5 * * * * *', () => {
         modifyPrice().then(function () {
             sendPrice().then(function () {
             })
@@ -17,22 +21,25 @@ module.exports.init = function (io) {
     });
 };
 
+/**
+ * Function with algorithm that modify stock prices
+ */
 function modifyPrice() {
     return new Promise(function (resolve) {
         let random = Math.floor(Math.random() * 4);
         if (random === 0) {
             google = google - google * 0.1 - 54;
-            amazon = amazon + amazon * 0.1 + 75;
-            apple = apple + apple * 0.1 + 43;
+            amazon = amazon + amazon * 0.08 + 75;
+            apple = apple + apple * 0.09 + 43;
         }
         if (random === 1) {
-            google = google + google * 0.1 + 83;
+            google = google + google * 0.09 + 83;
             amazon = amazon - amazon * 0.1 - 78;
-            apple = apple + apple * 0.1 + 63;
+            apple = apple + apple * 0.08 + 63;
         }
         if (random === 2) {
-            google = google + google * 0.1 + 83;
-            amazon = amazon + amazon * 0.1 + 63;
+            google = google + google * 0.08 + 83;
+            amazon = amazon + amazon * 0.09 + 63;
             apple = apple - apple * 0.1 - 74;
         }
         if (random === 3) {
@@ -44,19 +51,19 @@ function modifyPrice() {
             google = google + 200;
         }
         if (google > 2500) {
-            google = google - 200;
+            google = google - 400;
         }
         if (amazon < 600) {
             amazon = amazon + 200;
         }
         if (amazon > 2500) {
-            amazon = amazon - 200;
+            amazon = amazon - 400;
         }
         if (apple < 600) {
             apple = apple + 200;
         }
         if (apple > 2500) {
-            apple = apple - 200;
+            apple = apple - 400;
         }
         google = Math.round(google * 100) / 100;
         amazon = Math.round(amazon * 100) / 100;
@@ -65,6 +72,9 @@ function modifyPrice() {
     });
 }
 
+/**
+ * Function that send stock prices into socket
+ */
 function sendPrice() {
     return new Promise(function (resolve) {
         let company = {
@@ -83,13 +93,14 @@ function sendPrice() {
         company.apple.price = apple;
         this.company = company;
         socket.emit('stock', JSON.stringify(company));
-        console.log('ola')
         resolve();
     });
 }
 
+/**
+ * Function that send a msg into socket
+ * @param msg
+ */
 module.exports.sendMsg = function (msg) {
-    socket.on('connection', function () {
-        socket.emit('message', JSON.stringify(msg));
-    });
+    socket.emit('messages', JSON.stringify(msg));
 };

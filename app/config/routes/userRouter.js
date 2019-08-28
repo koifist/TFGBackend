@@ -20,11 +20,6 @@ module.exports.init = function (expressApp) {
     router.post('/updatePass', authentication.init, controller.userController.updatePass);
 
     /**
-     * Route that update user role.
-     */
-    router.post('/updateUser/:_id', authentication.init, controller.userController.updateRole);
-
-    /**
      * Route that delete
      */
     router.delete('/deleteUser/:_id?', authentication.init, controller.userController.deleteUser);

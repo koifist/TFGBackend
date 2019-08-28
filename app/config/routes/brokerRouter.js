@@ -15,14 +15,9 @@ module.exports.init = function (expressApp) {
     router.post('/sendMessage', authentication.init, controller.brokerController.sendMessage);
 
     /**
-     * Route that send message.
+     * Route that get all messages.
      */
-    router.post('/activeBroker/:_id*', authentication.init, controller.brokerController.activeBroker);
-
-    /**
-     * Route that send message.
-     */
-    router.post('/brokers/:_id*?', authentication.init, controller.brokerController.getBrokers);
+    router.get('/getMessages', authentication.init, controller.brokerController.getMessages);
 
     expressApp.use('/', router);
 };
