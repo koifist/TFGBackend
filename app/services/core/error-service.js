@@ -2,8 +2,8 @@ const env = require('../../config/env');
 
 /**
  * Method that send an error to client.
- * @param error
- * @param res
+ * @param {Object} error
+ * @param {Object} res
  */
 module.exports.sendError = function (error, res) {
     if (error.status && error.msg) {

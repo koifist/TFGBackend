@@ -6,7 +6,7 @@ const Promise = require('bluebird');
 const env = require('../../config/env');
 const router = require('../../config/router-config');
 const cors = require('cors');
-const cronService = require('../resource/socket-service');
+const cronService = require('../resource/stock-service');
 const moment = require('moment');
 
 module.exports.init = function () {
@@ -16,12 +16,13 @@ module.exports.init = function () {
     app.use(bodyParser.urlencoded({extended: true}));
     app.set('port', env.app.port);
     loggerService.init(app).then(function () {
+        logger.info('Logger start');
         moment().locale('es');
         router.init(app);
         let resolver = Promise.defer();
         let server = app.listen(app.get('port'), function () {
             resolver.resolve();
-            logger.info('express running at port ' + env.app.port);
+            logger.info('Express running at port ' + env.app.port);
         });
         let io = require('socket.io').listen(server);
         cronService.init(io);

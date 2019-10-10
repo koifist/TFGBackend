@@ -5,10 +5,31 @@ const error = require('../../services/core/error-service');
 const userService = require('../../services/resource/user-service');
 
 /**
+ * Method that return all active users
+ * @param {Object} req
+ * @param {Object} res
+ * @return {Promise}
+ */
+module.exports.getUser = function (req, res) {
+    logger.info('[userController] start getUser');
+    if (req.user.role !== env.services.roles.admin) {
+        error.sendError(env.errCodes.ERR401, res)
+    } else {
+        userService.getUser(req.user).then(function (data) {
+            logger.info('[userController] getUser success');
+            res.json(data);
+        }).catch(function (err) {
+            logger.error('[userController] getUser error', err);
+            error.sendError(err, res);
+        });
+    }
+};
+
+/**
  * Method that return a token to user
- * @param req.body.username
- * @param req.body.password
- * @return {String} token to user
+ * @param {Object} req
+ * @param {Object} res
+ * @return {Promise}
  */
 module.exports.signIn = function (req, res) {
     logger.info('[userController] start signIn');
@@ -23,9 +44,9 @@ module.exports.signIn = function (req, res) {
 
 /**
  * Method that create user
- * @param req.body.username
- * @param req.body.password
- * @return {String} token to user
+ * @param {Object} req
+ * @param {Object} res
+ * @return {Promise}
  */
 module.exports.signUp = function (req, res) {
     logger.info('[userController] SignUp Start');
@@ -39,9 +60,9 @@ module.exports.signUp = function (req, res) {
 
 /**
  * Method that update user password
- * @param req.user
- * @param req.body.password
- * @return {status}
+ * @param {Object} req
+ * @param {Object} res
+ * @return {Promise}
  */
 module.exports.updatePass = function (req, res) {
     logger.info('[userController] updatePass Start');
@@ -55,10 +76,9 @@ module.exports.updatePass = function (req, res) {
 
 /**
  * Method that update user Role [Administrator only]
- * @param req.user
- * @param req.body.role
- * @param req.params._id
- * @return {status}
+ * @param {Object} req
+ * @param {Object} res
+ * @return {Promise}
  */
 module.exports.updateRole = function (req, res) {
     logger.info('[userController] updateRole Start');
@@ -76,9 +96,9 @@ module.exports.updateRole = function (req, res) {
 
 /**
  * Method that delete user
- * @param req.params._id [Administrator only]
- * @param req.user._id [All users]
- * @return {status}
+ * @param {Object} req
+ * @param {Object} res
+ * @return {Promise}
  */
 module.exports.deleteUser = function (req, res) {
     logger.info('[userController] deleteUser Start');

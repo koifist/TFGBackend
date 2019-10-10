@@ -14,10 +14,9 @@ module.exports = {
             broker: 'BRO',
             public: 'PUB'
         },
-        company: [{name: 'Google', price: '1153,58'}, {name: 'Amazon', price: '1749,62'}, {
-            name: 'Apple',
-            price: '1202,64'
-        }]
+        stock: {
+            url: 'https://api.worldtradingdata.com/api/v1/stock?symbol=AAPL,AMZN,MSFT,GOOG&api_token=wbXSKGMZFEirgOasj7zJIfBKhFPb3WJ21rssBKK5k0QQB4SSfjUFw2Lm2VNu'
+        }
     },
     logger: {
         levelConsole: 'debug',

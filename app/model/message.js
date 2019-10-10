@@ -19,6 +19,10 @@ const messageSchema = extendSchema(commonModel.schema, {
     date: {
         type: Date,
         default: new Date
+    },
+    isActive: {
+        type: Boolean,
+        default: true
     }
 }, {
     timestamps: true,

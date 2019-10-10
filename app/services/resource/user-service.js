@@ -5,6 +5,7 @@ const Promise = require('bluebird');
 const bcrypt = require('bcryptjs');
 const User = require('../../model/user');
 const jwt = require('jsonwebtoken');
+const _ = require('lodash');
 
 
 /**
@@ -129,7 +130,7 @@ module.exports.updatePass = function (body, user) {
  */
 module.exports.updateRole = function (body, user) {
     return new Promise(function (resolve, reject) {
-        User.findOneAndUpdate({username: body.username}, {role: body.role})
+        User.findByIdAndUpdate(body._id, {role: body.role})
             .exec(function (err, data) {
                 if (err) {
                     logger.info('[userService] updateRole error');
@@ -157,6 +158,27 @@ module.exports.deleteUser = function (body, user) {
                 } else {
                     logger.info('[userService] deleteUser success');
                     resolve(env.errCodes.SUCCESS);
+                }
+            });
+    });
+};
+
+/**
+ * Function to get user
+ * @returns {Promise}
+ */
+module.exports.getUser = function (user) {
+    return new Promise(function (resolve, reject) {
+        User.find({_id: {$nin: [user._id]}, isActive: true})
+            .select('_id username role')
+            .exec(function (err, data) {
+                if (err) {
+                    logger.info('[userService] deleteUser error');
+                    reject(env.errCodes.SERVER);
+                } else {
+                    logger.info('[userService] deleteUser success');
+                    let users = _.map(data, '_doc');
+                    resolve(users);
                 }
             });
     });
