@@ -19,3 +19,20 @@ module.exports.getStockInfo = function (req, res) {
         error.sendError(err, res);
     });
 };
+
+/**
+ * Method that get stock history
+ * @param {Object} req
+ * @param {Object} res
+ * @return {Promise}
+ */
+module.exports.getStockHistory = function (req, res) {
+    logger.info('[stockController] getStockHistory Start');
+    stockService.getStockHistory().then(function (data) {
+        logger.info('[stockController] getStockHistory Success');
+        res.json(data);
+    }).catch(function (err) {
+        logger.error('[stockController] getStockHistory Error', err);
+        error.sendError(err, res);
+    });
+};

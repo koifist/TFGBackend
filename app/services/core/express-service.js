@@ -6,7 +6,7 @@ const Promise = require('bluebird');
 const env = require('../../config/env');
 const router = require('../../config/router-config');
 const cors = require('cors');
-const cronService = require('../resource/stock-service');
+const brokerService = require('../resource/broker-service');
 const moment = require('moment');
 
 module.exports.init = function () {
@@ -25,7 +25,7 @@ module.exports.init = function () {
             logger.info('Express running at port ' + env.app.port);
         });
         let io = require('socket.io').listen(server);
-        cronService.init(io);
+        brokerService.init(io);
         return resolver.promise;
     });
 };

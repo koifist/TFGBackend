@@ -15,7 +15,11 @@ module.exports = {
             public: 'PUB'
         },
         stock: {
-            url: 'https://api.worldtradingdata.com/api/v1/stock?symbol=AAPL,AMZN,MSFT,GOOG&api_token=wbXSKGMZFEirgOasj7zJIfBKhFPb3WJ21rssBKK5k0QQB4SSfjUFw2Lm2VNu'
+            stockCurrentPrices: 'https://api.worldtradingdata.com/api/v1/stock?symbol=AAPL,AMZN,MSFT,GOOG&api_token=wbXSKGMZFEirgOasj7zJIfBKhFPb3WJ21rssBKK5k0QQB4SSfjUFw2Lm2VNu',
+            historyApple: 'https://intraday.worldtradingdata.com/api/v1/intraday?symbol=AAPL&range=1&interval=5&api_token=wbXSKGMZFEirgOasj7zJIfBKhFPb3WJ21rssBKK5k0QQB4SSfjUFw2Lm2VNu&sort=asc',
+            historyAmazon: 'https://intraday.worldtradingdata.com/api/v1/intraday?symbol=AMZN&range=1&interval=5&api_token=wbXSKGMZFEirgOasj7zJIfBKhFPb3WJ21rssBKK5k0QQB4SSfjUFw2Lm2VNu&sort=asc',
+            historyMicrosoft: 'https://intraday.worldtradingdata.com/api/v1/intraday?symbol=MSFT&range=1&interval=5&api_token=wbXSKGMZFEirgOasj7zJIfBKhFPb3WJ21rssBKK5k0QQB4SSfjUFw2Lm2VNu&sort=asc',
+            historyGoogle: 'https://intraday.worldtradingdata.com/api/v1/intraday?symbol=GOOG&range=1&interval=5&api_token=wbXSKGMZFEirgOasj7zJIfBKhFPb3WJ21rssBKK5k0QQB4SSfjUFw2Lm2VNu&sort=asc'
         }
     },
     logger: {
@@ -33,6 +37,7 @@ module.exports = {
         SUCCESS: {status: 200, msg: 'OK'},
         SERVER: {status: 500, msg: 'Internal server error'},
         ERR400: {status: 400, msg: 'Bad request'},
-        ERR401: {status: 401, msg: 'Unauthorized'}
+        ERR401: {status: 401, msg: 'Unauthorized'},
+        ERR405: {status: 405, msg: 'Captured error'}
     }
 };

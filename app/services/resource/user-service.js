@@ -25,7 +25,7 @@ module.exports.signIn = function (body) {
                     reject(env.errCodes.SERVER);
                 } else if (!elem) {
                     logger.info('[user-services]signIn user dont exist');
-                    reject(env.errCodes.ERR401);
+                    reject(env.errCodes.ERR405);
                 } else {
                     logger.info('[user-services]signIn user found');
                     bcrypt.compare(body.password, elem.password).then(function (res) {
@@ -38,7 +38,7 @@ module.exports.signIn = function (body) {
                                     logger.info('[user-services]signIn jwt error');
                                     reject(env.errCodes.SERVER);
                                 } else {
-                                    delete elem.password;
+                                    delete elem._doc.password;
                                     logger.info('[user-services]signIn jwt succes', token);
                                     resolve({token: token, currentUser: elem});
                                 }
@@ -78,7 +78,7 @@ module.exports.signUp = function (body) {
                             logger.info('[user-services]signIn jwt error');
                             reject(env.errCodes.SERVER);
                         } else {
-                            delete data.password;
+                            delete data._doc.password;
                             logger.info('[user-services]signIn jwt succes', token);
                             resolve({token: token, currentUser: data});
                         }

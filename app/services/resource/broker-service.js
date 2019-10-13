@@ -4,8 +4,7 @@ let logger = loggerService.getLogger();
 const env = require('../../config/env');
 const Promise = require('bluebird');
 const Message = require('../../model/message');
-const stockService = require('./stock-service');
-
+let socket;
 /**
  * Function to send a Message
  * @param body.msg Message to send
@@ -21,7 +20,7 @@ module.exports.sendMessage = function (body, user) {
             Message.create({user: user._doc._id, username: user._doc.username, msg: body.msg, date: moment()})
                 .then(function (elem) {
                     elem.user = user._id;
-                    stockService.sendMsg(elem);
+                    socket.emit('messages', JSON.stringify(elem));
                     resolve(env.errCodes.SUCCESS);
                 }).catch(function (err) {
                 logger.info('[broker-services]sendMessage Mongo error');
@@ -49,3 +48,12 @@ module.exports.getMessages = function (body, user) {
     });
 };
 
+/**
+ * Function that start socket connection and execute stocks send
+ * @param {Object} io socket object
+ */
+module.exports.init = function (io) {
+    socket = io;
+    io.on('connection', function () {
+    });
+};

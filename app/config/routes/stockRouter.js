@@ -10,9 +10,16 @@ module.exports.init = function (expressApp) {
     /**
      * Route that returns a stock information
      * @param {Object} req.user User token info
-     * @return {Object} Socket information
+     * @return {Object} stock prices
      */
     router.get('/stockInfo', authentication.init, controller.stockController.getStockInfo);
+
+    /**
+     * Route that returns a stock history
+     * @param {Object} req.user User token info
+     * @return {Object} stock prices
+     */
+    router.get('/stockHistory', authentication.init, controller.stockController.getStockHistory);
 
     expressApp.use('/', router);
 };
