@@ -47,7 +47,7 @@ module.exports.signIn = function (body) {
                             });
                         } else {
                             logger.info('[user-services]signIn bcrypt pass dont match');
-                            reject(env.errCodes.ERR401);
+                            reject(env.errCodes.ERR405);
                         }
                     });
 
