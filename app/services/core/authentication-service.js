@@ -21,7 +21,7 @@ module.exports.init = function (req, res, next) {
                 logger.error('[authentication-services] Invalid token');
                 error.sendError(env.errCodes.ERR401, res);
             } else {
-                User.findOne({username: user.username})
+                User.findOne({username: user.username, active: true})
                     .exec(function (err, elem) {
                         if (err) {
                             logger.error('[authentication-services] Mongo error');
@@ -30,15 +30,10 @@ module.exports.init = function (req, res, next) {
                             logger.info('[authentication-services] User dont match');
                             error.sendError(env.errCodes.ERR401, res);
                         } else {
-                            if (elem.isActive) {
                                 logger.info('[authentication-services] Success user logged: ', user.username);
                                 delete elem._doc.password;
                                 req['user'] = elem;
                                 next();
-                            } else {
-                                logger.info('[authentication-services] User is not active');
-                                error.sendError(env.errCodes.ERR401, res);
-                            }
                         }
                     });
             }

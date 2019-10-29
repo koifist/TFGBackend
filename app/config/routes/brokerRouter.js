@@ -22,5 +22,14 @@ module.exports.init = function (expressApp) {
      */
     router.get('/getMessages', authentication.init, controller.brokerController.getMessages);
 
+    /**
+     * Route that delete a message
+     * @param {Object} req.params Query params
+     * @param {Object} req.params._id Message object id
+     * @param {Object} req.user User token info
+     * @return {Array} Array of messages
+     */
+    router.delete('/deleteMessage/:_id*', authentication.init, controller.brokerController.deleteMessage);
+
     expressApp.use('/', router);
 };

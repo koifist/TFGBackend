@@ -42,15 +42,23 @@ module.exports.init = function (expressApp) {
      * @param {Object} req.user User token info
      * @return {status} Status of response
      */
-    router.delete('/deleteUser/:_id?', authentication.init, controller.userController.deleteUser);
+    router.delete('/deleteUser/:_id*?', authentication.init, controller.userController.deleteUser);
 
     /**
-     * Route that update user role.
-     * @param {String} req.params._id Id of user to delete
+     * Route that activate User.
+     * @param {String} req.params._id Id of user to activate
      * @param {Object} req.user User token info
      * @return {status} Status of response
      */
-    router.post('/updateRole', authentication.init, controller.userController.updateRole);
+    router.post('/activateUser/:_id*', authentication.init, controller.userController.activateUser);
+
+    /**
+     * Route that update user role.
+     * @param {String} req.params._id Id of user to update
+     * @param {Object} req.user User token info
+     * @return {status} Status of response
+     */
+    router.post('/updateRole/:_id*', authentication.init, controller.userController.updateRole);
 
     expressApp.use('/', router);
 };

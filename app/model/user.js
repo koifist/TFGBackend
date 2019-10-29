@@ -17,7 +17,7 @@ const userSchema = extendSchema(commonModel.schema, {
         type: String,
         default: env.services.roles.public
     },
-    isActive: {
+    active: {
         type: Boolean,
         default: true
     }
@@ -29,5 +29,8 @@ const userSchema = extendSchema(commonModel.schema, {
     toJSON: {
         virtuals: true
     }
+});
+userSchema.virtual('isBroker').get(function () {
+    return (this.role === 'BRO');
 });
 module.exports = mongooseService.newModel('User', userSchema);

@@ -20,7 +20,7 @@ const messageSchema = extendSchema(commonModel.schema, {
         type: Date,
         default: new Date
     },
-    isActive: {
+    active: {
         type: Boolean,
         default: true
     }

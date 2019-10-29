@@ -76,7 +76,7 @@ module.exports.getStockHistory = function () {
                     ful();
                 } else {
                     logger.error('[SocketService] getStockHistory Stock estatusError: ', response.status);
-                    reject();
+                    reject(env.errCodes.SERVER);
                 }
             });
         }).then(function () {

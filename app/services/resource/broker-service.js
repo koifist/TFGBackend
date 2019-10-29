@@ -36,11 +36,31 @@ module.exports.sendMessage = function (body, user) {
  */
 module.exports.getMessages = function (body, user) {
     return new Promise(function (resolve, reject) {
-        Message.find({})
+        Message.find({active: true})
+            .select(env.mongo.select.default)
             .populate({path: 'user', select: 'username'})
             .then(function (elem) {
                 logger.info('[broker-services]getMessages Success');
                 resolve(elem);
+            }).catch(function (err) {
+            logger.info('[broker-services]getMessages Mongo error');
+            reject(env.errCodes.SERVER);
+        });
+    });
+};
+
+/**
+ * Function to delete message
+ * @param {Object} params Object
+ * @param {Object} params._id Message object Id
+ * @returns {Promise} array of msg
+ */
+module.exports.deleteMessage = function (params, user) {
+    return new Promise(function (resolve, reject) {
+        Message.findByIdAndUpdate(params._id, {active: false})
+            .then(function (elem) {
+                logger.info('[broker-services]getMessages Success');
+                resolve(env.errCodes.SUCCESS);
             }).catch(function (err) {
             logger.info('[broker-services]getMessages Mongo error');
             reject(env.errCodes.SERVER);

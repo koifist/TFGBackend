@@ -12,8 +12,8 @@ const brokerService = require('../../services/resource/broker-service');
  */
 module.exports.sendMessage = function (req, res) {
     logger.info('[brokerController] sendMessage Start');
-    if (req.user.role !== 'BRO') {
-        logger.info('[brokerController] activeBroker Not ADM');
+    if (req.user.role !== env.services.roles.broker) {
+        logger.info('[brokerController] sendMessage Not BRO');
         error.sendError(env.errCodes.ERR401, res);
     } else {
         brokerService.sendMessage(req.body, req.user).then(function (data) {
@@ -36,11 +36,34 @@ module.exports.getMessages = function (req, res) {
     logger.info('[brokerController] getMessages Start');
     brokerService.getMessages(req.body, req.user)
         .then(function (data) {
-            logger.info('[brokerController] sendMessage Success');
+            logger.info('[brokerController] getMessages Success');
             res.json(data);
         }).catch(function (err) {
-        logger.error('[brokerController] sendMessage Error', err);
+        logger.error('[brokerController] getMessages Error', err);
+        error.sendError(err, res);
+    });
+};
+
+/**
+ * Method that delete a message
+ * @param {Object} req
+ * @param {Object} res
+ * @return {Promise}
+ */
+module.exports.deleteMessage = function (req, res) {
+    logger.info('[brokerController] deleteMessages Start');
+    if (req.user.role !== env.services.roles.admin) {
+        logger.info('[brokerController] deleteMessage Not ADM');
+        error.sendError(env.errCodes.ERR401, res);
+    } else {
+        brokerService.deleteMessage(req.params, req.user)
+            .then(function (data) {
+                logger.info('[brokerController] deleteMessage Success');
+                res.json(data);
+            }).catch(function (err) {
+            logger.error('[brokerController] deleteMessage Error', err);
             error.sendError(err, res);
         });
+    }
 };
 

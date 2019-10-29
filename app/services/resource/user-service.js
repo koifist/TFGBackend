@@ -19,7 +19,9 @@ module.exports.signIn = function (body) {
         if (!body.username || !body.password) {
             reject(env.errCodes.ERR400);
         } else {
-            User.findOne({username: body.username, isActive: true}).exec(function (err, elem) {
+            User.findOne({username: body.username, active: true})
+                .select(env.mongo.select.default)
+                .exec(function (err, elem) {
                 if (err) {
                     logger.info('[user-services]signIn mongo error');
                     reject(env.errCodes.SERVER);
@@ -125,12 +127,12 @@ module.exports.updatePass = function (body, user) {
 /**
  * Function to update user role
  * @param user
- * @param body.role
+ * @param {Object} body.role
  * @returns {Promise}
  */
-module.exports.updateRole = function (body, user) {
+module.exports.updateRole = function (body, params, user) {
     return new Promise(function (resolve, reject) {
-        User.findByIdAndUpdate(body._id, {role: body.role})
+        User.findOneAndUpdate({_id: params._id, role: {$nin: [env.services.roles.admin]}}, {role: body.role})
             .exec(function (err, data) {
                 if (err) {
                     logger.info('[userService] updateRole error');
@@ -150,7 +152,10 @@ module.exports.updateRole = function (body, user) {
  */
 module.exports.deleteUser = function (body, user) {
     return new Promise(function (resolve, reject) {
-        User.findByIdAndUpdate(body._id, {active: false})
+        User.findOneAndUpdate({_id: body._id, role: {$nin: [env.services.roles.admin]}}, {
+            active: false,
+            role: env.services.roles.public
+        })
             .exec(function (err, data) {
                 if (err) {
                     logger.info('[userService] deleteUser error');
@@ -164,21 +169,41 @@ module.exports.deleteUser = function (body, user) {
 };
 
 /**
+ * Function to activate user
+ * @param body._id
+ * @returns {Promise}
+ */
+module.exports.activateUser = function (body, user) {
+    return new Promise(function (resolve, reject) {
+        User.findOneAndUpdate({_id: body._id, role: {$nin: [env.services.roles.admin]}}, {active: true})
+            .exec(function (err, data) {
+                if (err) {
+                    logger.info('[userService] activateUser error');
+                    reject(env.errCodes.SERVER);
+                } else {
+                    logger.info('[userService] activateUser success');
+                    resolve(env.errCodes.SUCCESS);
+                }
+            });
+    });
+};
+
+/**
  * Function to get user
  * @returns {Promise}
  */
 module.exports.getUser = function (user) {
     return new Promise(function (resolve, reject) {
-        User.find({_id: {$nin: [user._id]}, isActive: true})
-            .select('_id username role')
+        User.find({role: {$nin: [env.services.roles.admin]}})
+            .select('_id username role isBroker active')
+            .sort('role -active username')
             .exec(function (err, data) {
                 if (err) {
-                    logger.info('[userService] deleteUser error');
+                    logger.info('[userService] getUser error');
                     reject(env.errCodes.SERVER);
                 } else {
-                    logger.info('[userService] deleteUser success');
-                    let users = _.map(data, '_doc');
-                    resolve(users);
+                    logger.info('[userService] getUser success');
+                    resolve(data);
                 }
             });
     });
